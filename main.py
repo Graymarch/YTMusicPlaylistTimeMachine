@@ -50,6 +50,16 @@ song_artists = [re.sub(
 
 #YT Video Collection Section - not implemented yet.
 video_ids = []
+for idx, song in enumerate(song_titles):
+    request = yt.search().list(
+        part="snippet",
+        maxResults=1,
+        q=f"{song} {song_artists[idx]}",
+        type="video",
+    )
+    yt_search_response = request.execute()
+    video_ids.append(yt_search_response["items"][0]["id"]["videoId"])
+    if idx == 4: break
 
 #Playlist Creation/Filling Section
 #Builds an API request to create a playlist for the authenticated account.
@@ -65,8 +75,8 @@ request = yt.playlists().insert(
         }
     }
 )
-yt_response = request.execute() #Executes the playlist creation request and stores the response.
-list_id = yt_response["id"] #Collects the new playlist's ID for the next step.
+yt_playlist_response = request.execute() #Executes the playlist creation request and stores the response.
+list_id = yt_playlist_response["id"] #Collects the new playlist's ID for the next step.
 
 #For each video ID, it inserts the associated video into the new playlist.
 for item in video_ids:
